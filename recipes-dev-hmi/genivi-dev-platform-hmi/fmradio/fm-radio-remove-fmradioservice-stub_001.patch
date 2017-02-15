@@ -1,0 +1,246 @@
+diff --git a/Main.qml b/Main.qml
+index 4dfcfc3..0fe3aea 100644
+--- a/Main.qml
++++ b/Main.qml
+@@ -7,7 +7,7 @@
+ import QtQuick 2.0
+ import QtQuick.Controls 1.2
+ import QtQuick.Window 2.0
+-//import com.jlr.fmradio 1.0
++import com.jlr.fmradio 1.0
+ //import system 1.0
+ 
+ Item {
+@@ -23,45 +23,55 @@ Item {
+     property real fmMin: 87.7
+     property real fmMax: 107.9
+     property real currentFM: 87.7
++    onCurrentFMChanged: {
++	radio.frequency = currentFM*1000000;
++    }
++    onRadioIsOnChanged: {
++        if (radioIsOn) {
++		radio.enable();
++        }
++	else {
++		radio.disable();
++	}
++    }
+ 
+ 
++    FMRadio {
++            id: radio
+ 
+-    //    FMRadio {
+-    //        id: radio
+-
+-    //        onDisabled: {
+-    //            rdsText.text = "Radio Off"
+-
+-    //        }
+-    //        onEnabled: {
+-    //            rdsText.text = "Radio On"
+-
+-    //        }
+-    //        onFrequencyChanged: {
+-    //            rdsText.text = "Frequency Changed: " + frequency
+-    //            station.text = frequency / 1000000
+-    //            stationFreq = frequency
+-
+-    //        }
+-    //        onRdsChanged: {
+-    //            rdsText.text = RdsString
+-    //            rdsInfo = RdsString
+-    //        }
+-    //        onRdsClear: {
+-    //            rdsText.text = "RDS Clear"
+-    //            rdsInfo = "No RDS"
+-    //        }
+-    //        onRdsComplete: {
+-    //            rdsText.text = RdsString
+-    //            rdsInfo = RdsString
+-    //        }
+-    //        onStationFound: {
+-    //            rdsText.text = "Frequency Changed: " + frequency
+-    //            station.text = frequency / 1000000
+-    //            stationFreq = frequency
+-    //            seeking = false
+-    //        }
+-    //    }
++            onDisabled: {
++                rdsText.text = "Radio Off"
++
++            }
++            onEnabled: {
++                rdsText.text = "Radio On"
++
++            }
++            onFrequencyChanged: {
++                rdsText.text = "Frequency Changed: " + frequency
++                station.text = frequency / 1000000
++                stationFreq = frequency
++
++            }
++            onRdsChanged: {
++                rdsText.text = RdsString
++                rdsInfo = RdsString
++            }
++            onRdsClear: {
++                rdsText.text = "RDS Clear"
++                rdsInfo = "No RDS"
++            }
++            onRdsComplete: {
++                rdsText.text = RdsString
++                rdsInfo = RdsString
++            }
++            onStationFound: {
++                rdsText.text = "Frequency Changed: " + frequency
++                station.text = frequency / 1000000
++                stationFreq = frequency
++                seeking = false
++            }
++   }
+ 
+ 
+     Image {
+@@ -169,7 +179,7 @@ Item {
+                             enabled: radioIsOn
+                             anchors.fill: parent
+                             onClicked: {
+-                                (currentFM > fmMin)? currentFM -= 0.2 : currentFM = fmMax;
++                                (currentFM > fmMin)? currentFM -= 0.1 : currentFM = fmMax;
+                             }
+                         }
+                     }
+@@ -199,7 +209,7 @@ Item {
+                             enabled: radioIsOn
+                             anchors.fill: parent
+                             onClicked: {
+-                                (currentFM < fmMax)? currentFM += 0.2 : currentFM = fmMin;
++                                (currentFM < fmMax)? currentFM += 0.1 : currentFM = fmMin;
+                             }
+                         }
+                     }
+@@ -218,14 +228,14 @@ Item {
+                             enabled: radioIsOn
+                             anchors.fill: parent
+                             onClicked: {
+-                                currentFM = 101.9
++                                currentFM = 105.9
+                             }
+ 
+                             Text {
+                                 id: presetText1
+                                 anchors.centerIn: parent
+                                 color: "#ffffff"
+-                                text: qsTr("101.9")
++                                text: qsTr("Fun")
+                                 font.bold: true
+                                 font.pixelSize: 28
+                             }
+@@ -240,14 +250,14 @@ Item {
+                             enabled: radioIsOn
+                             anchors.fill: parent
+                             onClicked: {
+-                                currentFM = 94.7
++                                currentFM = 103.9
+                             }
+ 
+                             Text {
+                                 id: presetText2
+                                 anchors.centerIn: parent
+                                 color: "#ffffff"
+-                                text: qsTr("94.7")
++                                text: qsTr("RTL")
+                                 font.bold: true
+                                 font.pixelSize: 28
+                             }
+@@ -262,14 +272,14 @@ Item {
+                             enabled: radioIsOn
+                             anchors.fill: parent
+                             onClicked: {
+-                                currentFM = 91.5
++                                currentFM = 106.3
+                             }
+ 
+                             Text {
+                                 id: presetText3
+                                 anchors.centerIn: parent
+                                 color: "#ffffff"
+-                                text: qsTr("91.5")
++                                text: qsTr("Europe1")
+                                 font.bold: true
+                                 font.pixelSize: 28
+                             }
+@@ -277,71 +287,6 @@ Item {
+                     }
+                 }
+ 
+-                Row {
+-                    anchors.horizontalCenter: parent.horizontalCenter
+-                    spacing: 40
+-
+-                    Image {
+-                        id: presetButton4
+-                        source: "images/radio/preset.png"
+-                        height: sourceSize.height * 2
+-                        MouseArea {
+-                            enabled: radioIsOn
+-                            anchors.fill: parent
+-                            onClicked: currentFM = 87.7
+-
+-                            Text {
+-                                id: presetText4
+-                                anchors.centerIn: parent
+-                                color: "#ffffff"
+-                                text: qsTr("")
+-                                font.bold: true
+-                                font.pixelSize: 28
+-                            }
+-                        }
+-                    }
+-
+-                    Image {
+-                        id: presetButton5
+-                        source: "images/radio/preset.png"
+-                        height: sourceSize.height * 2
+-                        MouseArea {
+-                            enabled: radioIsOn
+-                            anchors.fill: parent
+-                            onClicked: currentFM = 87.7
+-
+-                            Text {
+-                                id: presetText5
+-                                anchors.centerIn: parent
+-                                color: "#ffffff"
+-                                text: qsTr("")
+-                                font.bold: true
+-                                font.pixelSize: 28
+-                            }
+-                        }
+-                    }
+-
+-                    Image {
+-                        id: presetButton6
+-                        source: "images/radio/preset.png"
+-                        height: sourceSize.height * 2
+-                        MouseArea {
+-                            enabled: radioIsOn
+-                            anchors.fill: parent
+-                            onClicked: currentFM = 87.7
+-
+-                            Text {
+-                                id: presetText6
+-                                anchors.centerIn: parent
+-                                color: "#ffffff"
+-                                text: qsTr("")
+-                                font.bold: true
+-                                font.pixelSize: 28
+-                            }
+-                        }
+-                    }
+-
+-                }
+             }
+         }
+     }
