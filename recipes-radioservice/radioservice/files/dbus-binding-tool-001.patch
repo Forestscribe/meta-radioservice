@@ -1,0 +1,10 @@
+diff --git a/src/Makefile.am b/src/Makefile.am
+index a285195..38f3f7d 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -15,4 +15,4 @@ EXTRA_DIST = fm_radio_service.xml
+ 
+ #Rule to generate the binding headers
+ server-bindings.h: fm_radio_service.xml
+-	dbus-binding-tool --prefix=server_object --mode=glib-server $<> $@
++	vala-dbus-binding-tool --prefix=server_object --mode=glib-server $<> $@

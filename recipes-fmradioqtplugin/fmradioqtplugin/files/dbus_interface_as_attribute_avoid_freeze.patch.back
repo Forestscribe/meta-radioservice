@@ -1,0 +1,109 @@
+diff --git a/qdeclarativeradio/fmradio.cpp b/qdeclarativeradio/fmradio.cpp
+index ec52d09..a3e5854 100644
+--- a/qdeclarativeradio/fmradio.cpp
++++ b/qdeclarativeradio/fmradio.cpp
+@@ -1,14 +1,11 @@
+ #include "fmradio.h"
+ 
+-#include <QtDBus/QDBusConnection>
+ #include <QtDBus/QDBusMessage>
+ #include <QDBusInterface>
+ 
+ 
+ #include <QDebug>
+ 
+-QDBusInterface remoteApp(DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE);
+-
+ FMRadio::FMRadio(QObject *parent):
+     QObject(parent)
+ {
+@@ -16,7 +13,7 @@ FMRadio::FMRadio(QObject *parent):
+      * TODO: streamline this by connecting through the remoteApp interface
+      */
+     QDBusConnection conn = QDBusConnection::sessionBus();
+-
++    this->remoteApp = new QDBusInterface(DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, conn);
+     conn.connect(DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, "ondisabled", this, SIGNAL(disabled()));
+     conn.connect(DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, "onenabled", this, SIGNAL(enabled()));
+     conn.connect(DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, "onfrequencychanged", this, SIGNAL(frequencyChanged(double)));
+@@ -42,7 +39,7 @@ FMRadio::~FMRadio()
+  */
+ void FMRadio::cancelSeek()
+ {
+-    remoteApp.call("cancelseek");
++    this->remoteApp->call("cancelseek");
+ }
+ 
+ /*
+@@ -54,7 +51,7 @@ void FMRadio::cancelSeek()
+  */
+ void FMRadio::enable()
+ {
+-    remoteApp.call("enable");
++    this->remoteApp->call("enable");
+ }
+ 
+ /*
+@@ -68,7 +65,7 @@ void FMRadio::enable()
+  */
+ void FMRadio::disable()
+ {
+-    remoteApp.call("disable");
++    this->remoteApp->call("disable");
+ }
+ 
+ /*
+@@ -93,7 +90,7 @@ void FMRadio::disable()
+ void FMRadio::seek(const bool &up)
+ {
+     const QVariant &arg = QVariant(up);
+-    remoteApp.call("seek", arg);
++    this->remoteApp->call("seek", arg);
+ }
+ 
+ /*
+@@ -113,7 +110,7 @@ void FMRadio::setFrequency(const double frequency)
+     if (frequency > FM_RADIO_SERVICE_MIN_FREQ &&
+             frequency < FM_RADIO_SERVICE_MAX_FREQ) {
+         const QVariant &arg = QVariant(frequency);
+-        remoteApp.call("setfrequency", arg);
++        this->remoteApp->call("setfrequency", arg);
+     } else {
+       qWarning() << "Frequency is not valid. Please use a value between"
+                  << FM_RADIO_SERVICE_MIN_FREQ
+@@ -127,7 +124,7 @@ void FMRadio::setFrequency(const double frequency)
+  */
+ bool FMRadio::isEnabled()
+ {
+-    const QVariant reply = remoteApp.property("enabled");
++    const QVariant reply = this->remoteApp->property("enabled");
+     return reply.toBool();
+ }
+ 
+@@ -136,6 +133,6 @@ bool FMRadio::isEnabled()
+  */
+ double FMRadio::frequency()
+ {
+-    const QVariant reply = remoteApp.property("frequency");
++    const QVariant reply = this->remoteApp->property("frequency");
+     return reply.toDouble();
+ }
+diff --git a/qdeclarativeradio/fmradio.h b/qdeclarativeradio/fmradio.h
+index 7500d84..ad94f8c 100644
+--- a/qdeclarativeradio/fmradio.h
++++ b/qdeclarativeradio/fmradio.h
+@@ -1,3 +1,6 @@
++#include <QtDBus/QDBusConnection>
++#include <QDBusConnection>
++
+ #ifndef FMRADIO_H
+ #define FMRADIO_H
+ 
+@@ -44,6 +47,7 @@ public:
+      * each method available on the D-Bus interface.
+      */
+ 
++    QDBusInterface *remoteApp;
+     Q_INVOKABLE void cancelSeek();
+     Q_INVOKABLE void disable();
+     Q_INVOKABLE void enable();
